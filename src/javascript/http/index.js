@@ -12,7 +12,6 @@ import axios from './axios/index.js';
  * @date: 2023-04-18 11:18:22
 */
 export function request(params = {}) {
-
     // 此处 可以补一些统一的参数 健壮性判断
     // todo
 

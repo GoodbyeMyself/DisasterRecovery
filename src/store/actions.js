@@ -8,7 +8,15 @@ import { request } from 'javascript@/http';
 
 const actions = {
     // 本地数据统一请求方法
-    [storeStatic.A_ACTION_COMMON]({ commit }, { prefixPath = window.QUALITY.hostName, url, data = {}, method = requestMethod.__GET, tips = tip.__FAIL, paramsSerializer }) {
+    [storeStatic.A_ACTION_COMMON]({ commit }, {
+        prefixPath = window.QUALITY.hostName,
+        url,
+        data = {},
+        method = requestMethod.__GET,
+        tips = tip.__FAIL,
+        // 自定义参数
+        mock = false
+    }) {
         // 执行请求
         return new Promise((resolve, reject) => {
             request({
@@ -18,7 +26,7 @@ const actions = {
                 data: {
                     ...data
                 },
-                paramsSerializer: paramsSerializer
+                mock
             }).then((res) => {
                 resolve(res.data);
             }).catch((e) => {

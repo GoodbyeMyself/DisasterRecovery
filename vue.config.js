@@ -4,6 +4,7 @@ const path = require('path');
 
 // 代理地址
 const proxyIP = "http://localhost:3000";
+
 // 代理列表
 const proxyList = [{
     name: process.env.VUE_APP_DATA_QUALITY_HOST,
@@ -20,12 +21,15 @@ let proxyObj = {};
 
 // setting
 proxyList.forEach(item => {
+    // --
+    const prefix = item.prefix ? item.prefix : item.name;
+    // --
     proxyObj[item.name] = {
         target: item.ip,
         ws: true,
         changeOrigin: true,
         pathRewrite: {
-            ['^' + item.name]: ""
+            ['^' + item.name]: prefix
         }
     };
 });

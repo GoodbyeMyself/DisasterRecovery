@@ -17,8 +17,8 @@
         </el-dialog>
         <img alt="Vue logo" src="../assets/logo.png">
         <br>
-        <el-button type="primary" @click="test401()">
-            401
+        <el-button type="primary" @click="testInfo()">
+            testInfo
         </el-button>
     </div>
 </template>
@@ -66,10 +66,10 @@ export default {
          * @author: M.yunlong
          * @date: 2023-04-18 14:07:32
         */
-        test401() {
-            console.log(222, '<- 打印 xxx');
+        testInfo() {
             this[storeStatic.A_ACTION_COMMON]({
-                url: 'test401'
+                url: 'testInfo',
+                mock: true
             }).then(res => {
                 console.log(res, '<- 打印 axios res');
             });
