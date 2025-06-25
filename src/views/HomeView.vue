@@ -15,7 +15,6 @@
                 <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
             </span>
         </el-dialog>
-        <img alt="Vue logo" src="../assets/logo.png">
         <br>
         <el-button type="primary" @click="testInfo()">
             testInfo

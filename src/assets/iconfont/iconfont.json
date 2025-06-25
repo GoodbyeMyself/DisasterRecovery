@@ -1,0 +1,16 @@
+{
+  "id": "4959192",
+  "name": "灾备管理系统",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "14244381",
+      "name": "灾备切换",
+      "font_class": "zaibeiqiehuan",
+      "unicode": "e67b",
+      "unicode_decimal": 59003
+    }
+  ]
+}

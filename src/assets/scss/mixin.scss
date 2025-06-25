@@ -1,9 +1,9 @@
- /**
-  * @description: less 函数
-  * @author: M.yunlong
-  * @date: 2023-04-23 10:32:04
+/**
+ * @description: scss 混入
+ * @author: M.yunlong
+ * @date: 2023-04-23 10:32:04
  */
-.clearfix() { // overflow: hidden; *zoom: 1;
+@mixin clearfix() {
 	&:before, &:after {
 		content: '';
 		display: table;
@@ -23,18 +23,18 @@
 	text-overflow: ellipsis;
 }
 
-// 多行省略
-.multiLine(@len){
+// 多行省略混入
+@mixin multiLine($len) {
     overflow: hidden;
     text-overflow: ellipsis;
     word-break: break-all;
     display: -webkit-box;
-      /*限制在一个块元素显示的文本的行数*/
-    -webkit-line-clamp: @len;
+    /*限制在一个块元素显示的文本的行数*/
+    -webkit-line-clamp: $len;
     -webkit-box-orient: vertical;
 }
 
 // 单行省略号
 .multiLine1 {
-    .multiLine(1);
-}
+    @include multiLine(1);
+} 

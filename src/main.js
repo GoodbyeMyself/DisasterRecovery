@@ -11,10 +11,14 @@ import App from './App.vue';
 
 // element
 import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
+// 使用自定义的 SCSS 主题配置替代默认的 CSS
+import './element-variables.scss';
 
 // 全局样式
-import './assets/less/index.less';
+import './assets/scss/index.scss';
+
+// 全局样式
+import './assets/iconfont/iconfont.css';
 
 // 父子应用通信
 import actions from '@/shared/actions.js';
