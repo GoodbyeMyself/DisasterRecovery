@@ -1,2 +1,3 @@
-# DisasterRecovery
-灾备演练 - Vue 版本
+# micro-app-vue2
+
+## qiankun 测试的 独立子应用
