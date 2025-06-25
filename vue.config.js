@@ -34,6 +34,16 @@ proxyList.forEach(item => {
     };
 });
 
+// 添加灾备切换API代理
+proxyObj['/api/disaster-switch'] = {
+    target: 'http://localhost:3001',
+    ws: true,
+    changeOrigin: true,
+    pathRewrite: {
+        '^/api/disaster-switch': '/api/disaster-switch'
+    }
+};
+
 module.exports = defineConfig({
     publicPath: './',
     devServer: {

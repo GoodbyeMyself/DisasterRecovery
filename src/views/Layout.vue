@@ -21,6 +21,10 @@
                     <i class="el-icon-s-operation"></i>
                     <span slot="title">灾备管理</span>
                 </el-menu-item>
+                <el-menu-item index="/disaster-switch">
+                    <i class="el-icon-refresh"></i>
+                    <span slot="title">灾备切换</span>
+                </el-menu-item>
             </el-menu>
         </el-aside>
         <el-container>
