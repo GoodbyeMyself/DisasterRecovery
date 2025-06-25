@@ -13,15 +13,13 @@
                 active-text-color="#409eff"
                 router
             >
-                <el-menu-item
-                    v-for="item in menuList"
-                    :key="item.path"
-                    :index="item.path"
-                >
-                    <i :class="item.icon"></i>
-                    <span slot="title">
-                        {{ item.title }}
-                    </span>
+            <el-menu-item index="/home">
+                    <i class="el-icon-house"></i>
+                    <span slot="title">首页</span>
+                </el-menu-item>
+                <el-menu-item index="/disaster-recovery">
+                    <i class="el-icon-s-operation"></i>
+                    <span slot="title">灾备管理</span>
                 </el-menu-item>
             </el-menu>
         </el-aside>
@@ -66,12 +64,11 @@
 </template>
 
 <script>
-import menuList from "../menu.config.js";
 export default {
     name: "Layout",
     data() {
         return {
-            menuList,
+            loading: false
         };
     },
 };
