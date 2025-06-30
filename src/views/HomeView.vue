@@ -8,18 +8,18 @@
             <div class="data-flow">
                 <div class="center-info primary-center">
                     <h3>主中心</h3>
-                    <p>IP: {{ primaryCenter.ip }}</p>
-                    <p>端口: {{ primaryCenter.port }}</p>
-                    <p>用户: {{ primaryCenter.user }}</p>
+                    <p>IP: {{ master.hostname }}</p>
+                    <p>端口: {{ master.port }}</p>
+                    <p>用户: {{ master.username }}</p>
                 </div>
                 <div class="flow-arrow">
                     <i class="el-icon-refresh" @click="switchCenter"></i>
                 </div>
                 <div class="center-info backup-center">
                     <h3>备中心</h3>
-                    <p>IP: {{ backupCenter.ip }}</p>
-                    <p>端口: {{ backupCenter.port }}</p>
-                    <p>用户: {{ backupCenter.user }}</p>
+                    <p>IP: {{ slave.hostname }}</p>
+                    <p>端口: {{ slave.port }}</p>
+                    <p>用户: {{ slave.username }}</p>
                 </div>
             </div>
             <div class="switch-control">
@@ -87,10 +87,26 @@
 </template>
 
 <script>
+// vuex
+import * as storeStatic from 'store@/storeStatic.js';
+import { mapActions } from 'vuex';
 export default {
     name: "DisasterRecovery",
     data() {
         return {
+            // 数据流向
+            master: {
+                hostname: '',
+                port: '',
+                username: ''
+            },
+            // 备应用
+            slave: {
+                hostname: '',
+                port: '',
+                username: ''
+            },
+            // 周期配置
             configForm: {
                 intervalTime: 30,
             },
@@ -103,27 +119,37 @@ export default {
                     },
                 ],
             },
-            primaryCenter: {
-                ip: "192.168.1.100",
-                port: 22,
-                user: "sdc",
-                password: "",
-            },
-            backupCenter: {
-                ip: "192.168.1.101",
-                port: 22,
-                user: "sdc",
-                password: "",
-            },
             syncLoading: false,
             stopLoading: false,
-            isRunning: false,
+            isRunning: false
         };
     },
     mounted() {
-        // 移除API调用
+        // 获取 数据流向
+        this.GetMonitor();
     },
     methods: {
+        ...mapActions([
+            // 公共请求
+            storeStatic.A_ACTION_COMMON
+        ]),
+        /**
+         * @description: 获取 数据流向
+         * @author: M.yunlong
+         * @date: 2025-06-30 15:49:39
+        */
+        GetMonitor() {
+            this[storeStatic.A_ACTION_COMMON]({
+                url: '/getMonitor'
+            }).then(res => {
+                if (res.data) {
+                    // 主应用
+                    this.master = res.data.master;
+                    // 备应用
+                    this.slave = res.data.slave;
+                }
+            });
+        },
         // 保存配置 - 改为静态处理
         async saveConfig() {
             try {

@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "16530774",
+      "name": "日志查询",
+      "font_class": "rizhichaxun",
+      "unicode": "e642",
+      "unicode_decimal": 58946
+    },
+    {
+      "icon_id": "37304269",
+      "name": "首页",
+      "font_class": "shouye",
+      "unicode": "e66f",
+      "unicode_decimal": 58991
+    },
+    {
       "icon_id": "14244381",
       "name": "灾备切换",
       "font_class": "zaibeiqiehuan",

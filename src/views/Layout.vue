@@ -14,11 +14,11 @@
                 router
             >
             <el-menu-item index="/home">
-                    <i class="el-icon-house"></i>
+                    <i class="iconfont icon-shouye"></i>
                     <span slot="title">灾备管理</span>
                 </el-menu-item>
                 <el-menu-item index="/disaster-recovery">
-                    <i class="el-icon-s-operation"></i>
+                    <i class="iconfont icon-rizhichaxun"></i>
                     <span slot="title">运行日志</span>
                 </el-menu-item>
             </el-menu>
@@ -35,7 +35,6 @@
                                     <img src="../assets/images/user.png" />
                                 </el-avatar>
                                 <span class="username">管理员</span>
-                                <i class="el-icon-arrow-down el-icon--right"></i>
                             </div>
                             <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item>
