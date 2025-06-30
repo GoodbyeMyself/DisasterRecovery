@@ -13,7 +13,7 @@
                     <p>用户: {{ primaryCenter.user }}</p>
                 </div>
                 <div class="flow-arrow">
-                    <i class="el-icon-arrow-right"></i>
+                    <i class="el-icon-refresh" @click="switchCenter"></i>
                 </div>
                 <div class="center-info backup-center">
                     <h3>备中心</h3>
@@ -66,7 +66,7 @@
             </div>
             <div class="control-buttons">
                 <el-button
-                    type="success"
+                    type="primary"
                     :loading="syncLoading"
                     :disabled="isRunning"
                     @click="startSync"
@@ -74,44 +74,13 @@
                     开始同步
                 </el-button>
                 <el-button
-                    type="danger"
+                    type="info"
                     :loading="stopLoading"
                     :disabled="!isRunning"
                     @click="stopSync"
                 >
                     停止同步
                 </el-button>
-            </div>
-
-            <!-- 运行状态 -->
-            <div class="status-info">
-                <el-alert
-                    v-if="backupStatus === 'running'"
-                    title="数据备份正在运行中"
-                    type="info"
-                    :closable="false"
-                    show-icon
-                >
-                </el-alert>
-                <el-alert
-                    v-if="restoreStatus === 'running'"
-                    title="数据恢复正在运行中"
-                    type="info"
-                    :closable="false"
-                    show-icon
-                >
-                </el-alert>
-                <el-alert
-                    v-if="
-                        backupStatus === 'completed' &&
-                        restoreStatus === 'completed'
-                    "
-                    title="同步已完成"
-                    type="success"
-                    :closable="false"
-                    show-icon
-                >
-                </el-alert>
             </div>
         </el-card>
     </div>
@@ -149,8 +118,6 @@ export default {
             syncLoading: false,
             stopLoading: false,
             isRunning: false,
-            backupStatus: "idle", // idle, running, completed, error
-            restoreStatus: "idle",
         };
     },
     mounted() {
@@ -175,14 +142,7 @@ export default {
                 // 模拟异步操作
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 this.isRunning = true;
-                this.backupStatus = "running";
                 this.$message.success("同步已开始");
-                
-                // 模拟同步完成
-                setTimeout(() => {
-                    this.backupStatus = "completed";
-                    this.restoreStatus = "completed";
-                }, 3000);
             } catch (error) {
                 this.$message.error("启动同步失败: " + error.message);
             } finally {
@@ -198,8 +158,6 @@ export default {
                 await new Promise(resolve => setTimeout(resolve, 500));
                 this.$message.success("同步已停止");
                 this.isRunning = false;
-                this.backupStatus = "idle";
-                this.restoreStatus = "idle";
             } catch (error) {
                 this.$message.error("停止同步失败: " + error.message);
             } finally {
@@ -211,7 +169,7 @@ export default {
         async switchCenter() {
             try {
                 await this.$confirm(
-                    "确认要切换主备中心吗？这将停止当前服务并重新启动。",
+                    "确认要切换主备中心吗 ？",
                     "提示",
                     {
                         confirmButtonText: "确定",
@@ -238,72 +196,248 @@ export default {
 
 <style lang="scss" scoped>
 .disaster-recovery {
-    padding: 20px;
+    padding: 30px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 50vh;
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    ::v-deep .el-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.95);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        &:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .el-card__header {
+            background: linear-gradient(90deg, #ffffff 0%, #f8f9fa 100%);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            padding: 20px 24px;
+            
+            span {
+                font-size: 18px;
+                font-weight: 600;
+                color: #1a1a1a;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+            }
+        }
+
+        .el-card__body {
+            padding: 32px 24px;
+        }
+    }
 
     .config-card,
     .flow-card,
     .control-card {
-        margin-bottom: 20px;
+        margin-bottom: 24px;
     }
 
     .data-flow {
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 20px;
+        padding: 40px 20px;
+        position: relative;
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #000000, transparent);
+            border-radius: 2px;
+        }
 
         .center-info {
-            padding: 20px;
-            border-radius: 8px;
+            padding: 32px 28px;
+            border-radius: 16px;
             text-align: center;
-            min-width: 200px;
+            min-width: 240px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+                z-index: 1;
+            }
+
+            > * {
+                position: relative;
+                z-index: 2;
+            }
 
             &.primary-center {
-                background-color: #f0f9ff;
-                border: 2px solid #409eff;
+                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 50%, #e9ecef 100%);
+                border: 2px solid #000000;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+
+                &::after {
+                    content: 'PRIMARY';
+                    position: absolute;
+                    top: 8px;
+                    right: 8px;
+                    background: #000000;
+                    color: white;
+                    font-size: 10px;
+                    font-weight: 700;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    letter-spacing: 1px;
+                    z-index: 3;
+                }
             }
 
             &.backup-center {
-                background-color: #f0f9ff;
-                border: 2px solid #67c23a;
+                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 50%, #e9ecef 100%);
+                border: 2px solid #666666;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+                &::after {
+                    content: 'BACKUP';
+                    position: absolute;
+                    top: 8px;
+                    right: 8px;
+                    background: #666666;
+                    color: white;
+                    font-size: 10px;
+                    font-weight: 700;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    letter-spacing: 1px;
+                    z-index: 3;
+                }
             }
 
             h3 {
-                margin: 0 0 10px 0;
-                color: #303133;
+                margin: 0 0 20px 0;
+                color: #1a1a1a;
+                font-size: 20px;
+                font-weight: 700;
+                letter-spacing: 1px;
+                text-transform: uppercase;
             }
 
             p {
-                margin: 5px 0;
-                color: #606266;
+                margin: 8px 0;
+                color: #4a4a4a;
+                font-size: 14px;
+                font-weight: 500;
+                font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+                background: rgba(0, 0, 0, 0.04);
+                padding: 6px 12px;
+                border-radius: 6px;
+                border-left: 3px solid #000000;
+            }
+
+            &:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
             }
         }
 
         .flow-arrow {
-            margin: 0 30px;
-            font-size: 24px;
-            color: #409eff;
+            margin: 0 40px;
+            font-size: 32px;
+            color: #000000;
+            position: relative;
+            animation: pulse 2s infinite;
+            cursor: pointer;
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 60px;
+                height: 60px;
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: 50%;
+                z-index: -1;
+            }
         }
     }
 
     .switch-control {
         text-align: center;
-        padding: 15px 0 5px 0;
-        border-top: 1px solid #ebeef5;
+        padding: 24px 0 8px 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        position: relative;
+
+        &::before {
+            content: 'SWITCH CONTROL';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            color: #666666;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 0 16px;
+            letter-spacing: 1px;
+        }
     }
 
     .control-buttons {
-        margin-bottom: 20px;
-
-        .el-button {
-            margin-right: 15px;
-        }
+        margin-bottom: 32px;
+        display: flex;
+        gap: 16px;
+        justify-content: center;
     }
 
-    .status-info {
-        .el-alert {
-            margin-bottom: 10px;
+    ::v-deep .el-form {
+        .el-form-item__label {
+            color: #1a1a1a;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .el-input-number {
+            .el-input__inner {
+                border: 2px solid rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                padding: 12px 16px;
+                font-weight: 500;
+                transition: all 0.3s ease;
+
+                &:focus {
+                    border-color: #000000;
+                    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+                }
+            }
         }
     }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+// 全局按钮样式覆盖
+::v-deep .el-button {
+    font-family: inherit;
 }
 </style>
