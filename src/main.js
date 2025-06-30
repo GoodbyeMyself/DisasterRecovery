@@ -11,8 +11,7 @@ import App from './App.vue';
 
 // element
 import ElementUI from 'element-ui';
-// 使用自定义的 SCSS 主题配置替代默认的 CSS
-import './element-variables.scss';
+import 'element-ui/lib/theme-chalk/index.css';
 
 // 全局样式
 import './assets/scss/index.scss';

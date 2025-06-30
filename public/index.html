@@ -7,12 +7,24 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <title>
-        xxx 灾备管理系统
+        灾备管理系统
     </title>
+    <!-- 系统配置文件 -->
+    <script type="text/javascript" src="./config.js"></script>
 </head>
 
 <body>
+    <!-- 容器 -->
     <div id="app"></div>
+    <!-- 版本号 输出 -->
+    <script type="text/javascript">
+        // 构建时间
+        console.info('BUILD TIME ：<%= process.env.VUE_APP_BUILD_TIME %>');
+        // commit id
+        console.info('GIT VERSION ：<%= process.env.VUE_APP_GIT_VERSION %>');
+        // 分支名称
+        console.info('GIT BRANCH ：<%= process.env.VUE_APP_GIT_BRANCH %>');
+    </script>
 </body>
 
 </html>

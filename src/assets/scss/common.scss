@@ -46,4 +46,13 @@
 
 .fr {
     float: right;
-} 
+}
+
+/**
+ * @description: element 复写
+ * @author: M.yunlong
+ * @date: 2025-06-30 14:58:33
+*/
+.el-card__body, .el-main {
+    padding: 12px;
+}

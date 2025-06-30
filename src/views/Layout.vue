@@ -3,7 +3,7 @@
         <el-aside width="240px" class="layout-aside">
             <div class="logo-area">
                 <img src="../assets/images/logo.svg" alt="logo">
-                灾备管理系统
+                广东交通集团
             </div>
             <el-menu
                 :default-active="$route.path"
@@ -15,15 +15,11 @@
             >
             <el-menu-item index="/home">
                     <i class="el-icon-house"></i>
-                    <span slot="title">首页</span>
+                    <span slot="title">灾备管理</span>
                 </el-menu-item>
                 <el-menu-item index="/disaster-recovery">
                     <i class="el-icon-s-operation"></i>
-                    <span slot="title">灾备管理</span>
-                </el-menu-item>
-                <el-menu-item index="/disaster-switch">
-                    <i class="el-icon-refresh"></i>
-                    <span slot="title">灾备切换</span>
+                    <span slot="title">运行日志</span>
                 </el-menu-item>
             </el-menu>
         </el-aside>
@@ -35,7 +31,6 @@
                             <div class="avatar-wrapper">
                                 <el-avatar 
                                     :size="32" 
-                                    src="../assets/images/user.png"
                                 >
                                     <img src="../assets/images/user.png" />
                                 </el-avatar>

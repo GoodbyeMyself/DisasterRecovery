@@ -11,10 +11,6 @@ const routes = [{
     path: '/disaster-recovery',
     name: 'disaster-recovery',
     component: () => import(/* webpackChunkName: "disaster-recovery" */ '../views/DisasterRecovery.vue')
-}, {
-    path: '/disaster-switch',
-    name: 'disaster-switch',
-    component: () => import(/* webpackChunkName: "disaster-switch" */ '../views/DisasterSwitch.vue')
 }];
 
 export default routes;

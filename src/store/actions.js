@@ -9,7 +9,7 @@ import { request } from 'javascript@/http';
 const actions = {
     // 本地数据统一请求方法
     [storeStatic.A_ACTION_COMMON]({ commit }, {
-        prefixPath = window.QUALITY.hostName,
+        prefixPath = window.DISASTER_RECOVERY.hostName,
         url,
         data = {},
         method = requestMethod.__GET,
