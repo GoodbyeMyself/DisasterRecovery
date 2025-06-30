@@ -187,6 +187,9 @@
 </template>
 
 <script>
+// vuex
+import * as storeStatic from 'store@/storeStatic.js';
+import { mapActions } from 'vuex';
 export default {
     name: "DisasterRecovery",
     data() {
@@ -331,9 +334,26 @@ export default {
             primaryPage: 1,
             backupPage: 1,
             pageSize: 10,
+            // 日志类型： master 主中心， slave 备中心
+            logType: 'master',
         };
     },
+    created() {
+        // 获取日志
+        this.GetLogs();
+    },
     methods: {
+        ...mapActions([
+            // 公共请求
+            storeStatic.A_ACTION_COMMON
+        ]),
+        GetLogs() {
+            this[storeStatic.A_ACTION_COMMON]({
+                url: 'log?type=' + this.logType + '&skipLineNum=' + 0 + '&limit=' + 100,
+            }).then(res => {
+                console.log(res);
+            });
+        },
         // 加载更多主应用日志
         async loadMorePrimaryLogs() {
             if (this.primaryLoading || !this.primaryHasMore) return;
