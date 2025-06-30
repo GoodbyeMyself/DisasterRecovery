@@ -16,7 +16,7 @@ process.env.VUE_APP_GIT_VERSION = execSync('git rev-parse --short HEAD', { encod
 // 分支名称: [ process.env.GIT_BRANCH 为 jenkins 传递 ]
 process.env.VUE_APP_GIT_BRANCH = process.env.GIT_BRANCH ? process.env.GIT_BRANCH : execSync('git symbolic-ref --short -q HEAD', { encoding: 'utf8'  }).trim();
 
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
 // vue-cli3本身有安装插件，不做package依赖安装
 const TerserPlugin = require('terser-webpack-plugin');
@@ -44,14 +44,12 @@ let proxyObj = {};
 // setting
 proxyList.forEach(item => {
     // --
-    const prefix = item.prefix ? item.prefix : item.name;
-    // --
     proxyObj[item.name] = {
         target: item.ip,
         ws: true,
         changeOrigin: true,
         pathRewrite: {
-            ['^' + item.name]: prefix
+            ['^' + item.name]: ''
         }
     };
 });
@@ -98,38 +96,39 @@ module.exports = defineConfig({
             // 将你的 library 暴露为所有的模块定义下都可运行的方式
             libraryTarget: 'umd'
         },
+        optimization: {
+            minimizer: [
+                ...(isProduction ? [
+                    // CSS 压缩
+                    new CssMinimizerPlugin({
+                        minimizerOptions: {
+                            preset: [
+                                'default',
+                                {
+                                    discardComments: { removeAll: true },
+                                    normalizeUnicode: false
+                                }
+                            ]
+                        }
+                    }),
+                    // 去掉debugger console.log
+                    new TerserPlugin({
+                        parallel: 3,
+                        exclude: /node_modules/,
+                        terserOptions: {
+                            compress: {
+                                warnings: false,
+                                drop_console: false,
+                                drop_debugger: true,
+                                pure_funcs: ['console.log']
+                            }
+                        }
+                    })
+                ] : [])
+            ]
+        },
         plugins: [
             ...(isProduction ? [
-                // css合并
-                new OptimizeCSSAssetsPlugin({
-                    assetNameRegExp: /\.css$/g,
-                    cssProcessor: require('cssnano'),
-                    cssProcessorPluginOptions: {
-                        preset: [
-                            'default',
-                            {
-                                discardComments: {
-                                    removeAll: true
-                                },
-                                normalizeUnicode: false
-                            }
-                        ]
-                    },
-                    canPrint: true
-                }),
-                // 去掉debugger console.log
-                new TerserPlugin({
-                    parallel: 3,
-                    exclude: /node_modules/,
-                    terserOptions: {
-                        compress: {
-                            warnings: false,
-                            drop_console: false,
-                            drop_debugger: true,
-                            pure_funcs: ['console.log']
-                        }
-                    }
-                }),
                 // gzip压缩
                 new CompressionWebpackPlugin({
                     algorithm: 'gzip',
