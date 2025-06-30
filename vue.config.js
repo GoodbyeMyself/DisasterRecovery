@@ -58,6 +58,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 module.exports = defineConfig({
     publicPath: isProduction ? './' : '/',
+    // --
     chainWebpack: config => {
         // --
         config.optimization.merge({
