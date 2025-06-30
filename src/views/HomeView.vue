@@ -140,7 +140,7 @@ export default {
         */
         GetMonitor() {
             this[storeStatic.A_ACTION_COMMON]({
-                url: '/getMonitor'
+                url: 'getMonitor'
             }).then(res => {
                 if (res.data) {
                     // 主应用
@@ -149,6 +149,34 @@ export default {
                     this.slave = res.data.slave;
                 }
             });
+        },
+        // 切换主备中心 - 改为静态处理
+        async switchCenter() {
+            try {
+                await this.$confirm(
+                    "确认要切换主备中心吗 ？",
+                    "提示",
+                    {
+                        confirmButtonText: "确定",
+                        cancelButtonText: "取消",
+                        type: "warning",
+                    }
+                );
+
+                this[storeStatic.A_ACTION_COMMON]({
+                    url: 'changeMaster',
+                    method: 'post'
+                }).then(res => {
+                    // messages
+                    this.$message.success("主备中心切换成功");
+                    // 获取 数据流向
+                    this.GetMonitor();
+                });
+            } catch (error) {
+                if (error !== "cancel") {
+                    this.$message.error("切换失败: " + error.message);
+                }
+            }
         },
         // 保存配置 - 改为静态处理
         async saveConfig() {
@@ -191,31 +219,7 @@ export default {
             }
         },
 
-        // 切换主备中心 - 改为静态处理
-        async switchCenter() {
-            try {
-                await this.$confirm(
-                    "确认要切换主备中心吗 ？",
-                    "提示",
-                    {
-                        confirmButtonText: "确定",
-                        cancelButtonText: "取消",
-                        type: "warning",
-                    }
-                );
-
-                // 模拟切换操作
-                const temp = { ...this.primaryCenter };
-                this.primaryCenter = { ...this.backupCenter };
-                this.backupCenter = temp;
-                
-                this.$message.success("主备中心切换成功");
-            } catch (error) {
-                if (error !== "cancel") {
-                    this.$message.error("切换失败: " + error.message);
-                }
-            }
-        },
+        
     },
 };
 </script>
