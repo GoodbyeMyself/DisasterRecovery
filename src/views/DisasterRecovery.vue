@@ -85,8 +85,8 @@ export default {
             backupLoading: false,
             primaryHasMore: true,
             backupHasMore: true,
-            primarySkipLineNum: 0,
-            backupSkipLineNum: 0,
+            primarySkipLineNum: 1,
+            backupSkipLineNum: 1,
             pageSize: 100,
         };
     },
@@ -122,14 +122,14 @@ export default {
                     const logData = res.data; // 直接使用字符串数组
                     
                     if (this.activeLogTab === 'primary') {
-                        if (skipLineNum === 0) {
+                        if (skipLineNum === 1) {
                             this.primaryLogs = logData;
                         } else {
                             this.primaryLogs.push(...logData);
                         }
                         this.primaryHasMore = logData.length === this.pageSize;
                     } else {
-                        if (skipLineNum === 0) {
+                        if (skipLineNum === 1) {
                             this.backupLogs = logData;
                         } else {
                             this.backupLogs.push(...logData);
@@ -200,9 +200,9 @@ export default {
             const currentLogs = this.activeLogTab === 'primary' ? this.primaryLogs : this.backupLogs;
             if (currentLogs.length === 0) {
                 if (this.activeLogTab === 'primary') {
-                    this.primarySkipLineNum = 0;
+                    this.primarySkipLineNum = 1;
                 } else {
-                    this.backupSkipLineNum = 0;
+                    this.backupSkipLineNum = 1;
                 }
                 this.GetLogs();
             }
