@@ -17,7 +17,6 @@
                         <!-- 加载更多按钮 - 主应用日志 -->
                         <div class="load-more-container">
                             <el-button
-                                v-if="primaryHasMore"
                                 :loading="primaryLoading"
                                 @click="loadMorePrimaryLogs"
                                 type="primary"
@@ -27,10 +26,6 @@
                                 <span v-if="!primaryLoading">加载更多日志</span>
                                 <span v-else>加载中...</span>
                             </el-button>
-                            <div v-else class="no-more-data">
-                                <i class="el-icon-info"></i>
-                                <span>已加载全部日志</span>
-                            </div>
                         </div>
                     </div>
                 </el-tab-pane>
@@ -48,7 +43,6 @@
                         <!-- 加载更多按钮 - 备用日志 -->
                         <div class="load-more-container">
                             <el-button
-                                v-if="backupHasMore"
                                 :loading="backupLoading"
                                 @click="loadMoreBackupLogs"
                                 type="primary"
@@ -58,10 +52,6 @@
                                 <span v-if="!backupLoading">加载更多日志</span>
                                 <span v-else>加载中...</span>
                             </el-button>
-                            <div v-else class="no-more-data">
-                                <i class="el-icon-info"></i>
-                                <span>已加载全部日志</span>
-                            </div>
                         </div>
                     </div>
                 </el-tab-pane>
@@ -356,26 +346,6 @@ export default {
             .el-icon-loading {
                 margin-right: 8px;
                 animation: rotating 2s linear infinite;
-            }
-        }
-        
-        .no-more-data {
-            color: #999999;
-            font-size: 14px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            
-            i {
-                font-size: 16px;
-                color: #cccccc;
-            }
-            
-            span {
-                color: #666666;
             }
         }
     }
