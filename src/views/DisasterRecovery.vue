@@ -2,75 +2,17 @@
     <div class="disaster-recovery">
         <!-- 日志查看 -->
         <el-card class="log-card">
-            <el-tabs v-model="activeLogTab">
+            <el-tabs v-model="activeLogTab" @tab-click="handleTabClick">
                 <el-tab-pane label="主应用日志" name="primary">
-                    <div class="table-container">
-                        <el-table
-                            :data="primaryLogs"
-                            style="width: 100%"
-                            height="500"
-                            stripe
-                            :header-cell-style="{ background: '#f8f9fa', color: '#1a1a1a', fontWeight: '600' }"
-                        >
-                            <el-table-column
-                                prop="timestamp"
-                                label="时间"
-                                width="180"
-                                sortable
-                            >
-                                <template slot-scope="scope">
-                                    <i class="el-icon-time"></i>
-                                    <span style="margin-left: 10px">{{ scope.row.timestamp }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                prop="level"
-                                label="级别"
-                                width="100"
-                                sortable
-                            >
-                                <template slot-scope="scope">
-                                    <el-tag
-                                        :type="getLogLevelType(scope.row.level)"
-                                        disable-transitions
-                                        size="small"
-                                    >
-                                        {{ scope.row.level }}
-                                    </el-tag>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                prop="module"
-                                label="模块"
-                                width="150"
-                                sortable
-                            >
-                                <template slot-scope="scope">
-                                    <span class="module-tag">{{ scope.row.module }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                prop="message"
-                                label="消息内容"
-                                show-overflow-tooltip
-                            >
-                            </el-table-column>
-                            <el-table-column
-                                prop="status"
-                                label="状态"
-                                width="120"
-                            >
-                                <template slot-scope="scope">
-                                    <el-tag
-                                        :type="getStatusType(scope.row.status)"
-                                        disable-transitions
-                                        size="small"
-                                    >
-                                        {{ scope.row.status }}
-                                    </el-tag>
-                                </template>
-                            </el-table-column>
-                        </el-table>
+                    <div class="log-container">
+                        <el-input
+                            type="textarea"
+                            :value="primaryLogText"
+                            :rows="25"
+                            readonly
+                            placeholder="暂无日志数据..."
+                            class="log-textarea"
+                        />
                         
                         <!-- 加载更多按钮 - 主应用日志 -->
                         <div class="load-more-container">
@@ -93,73 +35,15 @@
                     </div>
                 </el-tab-pane>
                 <el-tab-pane label="备用日志" name="backup">
-                    <div class="table-container">
-                        <el-table
-                            :data="backupLogs"
-                            style="width: 100%"
-                            height="500"
-                            stripe
-                            :header-cell-style="{ background: '#f8f9fa', color: '#1a1a1a', fontWeight: '600' }"
-                        >
-                            <el-table-column
-                                prop="timestamp"
-                                label="时间"
-                                width="180"
-                                sortable
-                            >
-                                <template slot-scope="scope">
-                                    <i class="el-icon-time"></i>
-                                    <span style="margin-left: 10px">{{ scope.row.timestamp }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                prop="level"
-                                label="级别"
-                                width="100"
-                                sortable
-                            >
-                                <template slot-scope="scope">
-                                    <el-tag
-                                        :type="getLogLevelType(scope.row.level)"
-                                        disable-transitions
-                                        size="small"
-                                    >
-                                        {{ scope.row.level }}
-                                    </el-tag>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                prop="module"
-                                label="模块"
-                                width="150"
-                                sortable
-                            >
-                                <template slot-scope="scope">
-                                    <span class="module-tag">{{ scope.row.module }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                prop="message"
-                                label="消息内容"
-                                show-overflow-tooltip
-                            >
-                            </el-table-column>
-                            <el-table-column
-                                prop="status"
-                                label="状态"
-                                width="120"
-                            >
-                                <template slot-scope="scope">
-                                    <el-tag
-                                        :type="getStatusType(scope.row.status)"
-                                        disable-transitions
-                                        size="small"
-                                    >
-                                        {{ scope.row.status }}
-                                    </el-tag>
-                                </template>
-                            </el-table-column>
-                        </el-table>
+                    <div class="log-container">
+                        <el-input
+                            type="textarea"
+                            :value="backupLogText"
+                            :rows="25"
+                            readonly
+                            placeholder="暂无日志数据..."
+                            class="log-textarea"
+                        />
                         
                         <!-- 加载更多按钮 - 备用日志 -->
                         <div class="load-more-container">
@@ -195,151 +79,29 @@ export default {
     data() {
         return {
             activeLogTab: "primary",
-            primaryLogs: [
-                {
-                    id: 1,
-                    timestamp: "2024-01-15 14:30:25",
-                    level: "INFO",
-                    module: "同步服务",
-                    message: "主应用数据同步服务启动成功，开始监控数据变化",
-                    status: "正常"
-                },
-                {
-                    id: 2,
-                    timestamp: "2024-01-15 14:32:15",
-                    level: "INFO",
-                    module: "数据库连接",
-                    message: "已成功连接到主数据库 192.168.1.100:3306",
-                    status: "正常"
-                },
-                {
-                    id: 3,
-                    timestamp: "2024-01-15 14:35:42",
-                    level: "WARN",
-                    module: "网络监控",
-                    message: "检测到网络延迟较高，当前延迟: 280ms",
-                    status: "警告"
-                },
-                {
-                    id: 4,
-                    timestamp: "2024-01-15 14:38:30",
-                    level: "INFO",
-                    module: "数据同步",
-                    message: "完成数据表 user_info 同步，同步记录数: 1,245条",
-                    status: "正常"
-                },
-                {
-                    id: 5,
-                    timestamp: "2024-01-15 14:40:18",
-                    level: "ERROR",
-                    module: "数据验证",
-                    message: "数据完整性检查失败，发现 3 条记录存在异常",
-                    status: "错误"
-                },
-                {
-                    id: 6,
-                    timestamp: "2024-01-15 14:42:05",
-                    level: "INFO",
-                    module: "故障恢复",
-                    message: "自动修复完成，已重新同步异常数据",
-                    status: "正常"
-                },
-                {
-                    id: 7,
-                    timestamp: "2024-01-15 14:45:30",
-                    level: "INFO",
-                    module: "监控报告",
-                    message: "系统运行状态良好，CPU使用率: 45%, 内存使用率: 62%",
-                    status: "正常"
-                },
-                {
-                    id: 8,
-                    timestamp: "2024-01-15 14:48:12",
-                    level: "WARN",
-                    module: "存储空间",
-                    message: "主存储空间使用率达到 78%，建议及时清理",
-                    status: "警告"
-                }
-            ],
-            backupLogs: [
-                {
-                    id: 1,
-                    timestamp: "2024-01-15 14:30:28",
-                    level: "INFO",
-                    module: "备份服务",
-                    message: "备用系统初始化完成，等待主系统数据同步",
-                    status: "正常"
-                },
-                {
-                    id: 2,
-                    timestamp: "2024-01-15 14:32:20",
-                    level: "INFO",
-                    module: "数据库连接",
-                    message: "已成功连接到备用数据库 192.168.1.101:3306",
-                    status: "正常"
-                },
-                {
-                    id: 3,
-                    timestamp: "2024-01-15 14:35:45",
-                    level: "INFO",
-                    module: "数据接收",
-                    message: "开始接收主系统同步数据",
-                    status: "正常"
-                },
-                {
-                    id: 4,
-                    timestamp: "2024-01-15 14:38:35",
-                    level: "INFO",
-                    module: "数据写入",
-                    message: "成功写入数据表 user_info，写入记录数: 1,245条",
-                    status: "正常"
-                },
-                {
-                    id: 5,
-                    timestamp: "2024-01-15 14:40:22",
-                    level: "WARN",
-                    module: "数据校验",
-                    message: "检测到数据不一致，正在等待主系统重新发送",
-                    status: "警告"
-                },
-                {
-                    id: 6,
-                    timestamp: "2024-01-15 14:42:08",
-                    level: "INFO",
-                    module: "数据修复",
-                    message: "接收到修复数据，数据一致性已恢复",
-                    status: "正常"
-                },
-                {
-                    id: 7,
-                    timestamp: "2024-01-15 14:45:33",
-                    level: "INFO",
-                    module: "系统状态",
-                    message: "备用系统运行正常，准备就绪状态",
-                    status: "正常"
-                },
-                {
-                    id: 8,
-                    timestamp: "2024-01-15 14:48:15",
-                    level: "INFO",
-                    module: "存储监控",
-                    message: "备用存储空间充足，使用率: 45%",
-                    status: "正常"
-                }
-            ],
+            primaryLogs: [],
+            backupLogs: [],
             primaryLoading: false,
             backupLoading: false,
             primaryHasMore: true,
             backupHasMore: true,
-            primaryPage: 1,
-            backupPage: 1,
-            pageSize: 10,
-            // 日志类型： master 主中心， slave 备中心
-            logType: 'master',
+            primarySkipLineNum: 0,
+            backupSkipLineNum: 0,
+            pageSize: 100,
         };
     },
+    computed: {
+        // 主应用日志文本
+        primaryLogText() {
+            return this.primaryLogs.join('\n');
+        },
+        // 备用日志文本
+        backupLogText() {
+            return this.backupLogs.join('\n');
+        }
+    },
     created() {
-        // 获取日志
+        // 获取主应用日志
         this.GetLogs();
     },
     methods: {
@@ -348,42 +110,67 @@ export default {
             storeStatic.A_ACTION_COMMON
         ]),
         GetLogs() {
+            const logType = this.activeLogTab === 'primary' ? 'master' : 'slave';
+            const skipLineNum = this.activeLogTab === 'primary' ? this.primarySkipLineNum : this.backupSkipLineNum;
+            
             this[storeStatic.A_ACTION_COMMON]({
-                url: 'log?type=' + this.logType + '&skipLineNum=' + 0 + '&limit=' + 100,
+                url: `log?type=${logType}&skipLineNum=${skipLineNum}&limit=${this.pageSize}`,
             }).then(res => {
-                console.log(res);
+                console.log('日志接口返回:', res);
+                
+                if (res && res.code === '0' && res.data && Array.isArray(res.data)) {
+                    const logData = res.data; // 直接使用字符串数组
+                    
+                    if (this.activeLogTab === 'primary') {
+                        if (skipLineNum === 0) {
+                            this.primaryLogs = logData;
+                        } else {
+                            this.primaryLogs.push(...logData);
+                        }
+                        this.primaryHasMore = logData.length === this.pageSize;
+                    } else {
+                        if (skipLineNum === 0) {
+                            this.backupLogs = logData;
+                        } else {
+                            this.backupLogs.push(...logData);
+                        }
+                        this.backupHasMore = logData.length === this.pageSize;
+                    }
+                    
+                    if (logData.length > 0) {
+                        // this.$message.success(`成功加载 ${logData.length} 条日志`);
+                    } else {
+                        this.$message.info('没有更多日志了');
+                        if (this.activeLogTab === 'primary') {
+                            this.primaryHasMore = false;
+                        } else {
+                            this.backupHasMore = false;
+                        }
+                    }
+                } else {
+                    this.$message.error('加载日志失败');
+                    console.error('日志接口返回错误:', res);
+                }
+            }).catch(error => {
+                console.error('获取日志失败:', error);
+                this.$message.error('获取日志失败，请重试');
             });
         },
+        
         // 加载更多主应用日志
         async loadMorePrimaryLogs() {
             if (this.primaryLoading || !this.primaryHasMore) return;
             
             this.primaryLoading = true;
+            this.activeLogTab = 'primary';
+            this.primarySkipLineNum += this.pageSize;
             
             try {
-                // 模拟API调用延迟
-                await new Promise(resolve => setTimeout(resolve, 800));
-                
-                // 生成更多日志数据
-                const newLogs = this.generateMoreLogs('primary', this.primaryPage + 1);
-                
-                if (newLogs.length > 0) {
-                    this.primaryLogs.push(...newLogs);
-                    this.primaryPage++;
-                    
-                    // 模拟数据有限，假设最多加载5页
-                    if (this.primaryPage >= 5) {
-                        this.primaryHasMore = false;
-                    }
-                    
-                    this.$message.success(`成功加载 ${newLogs.length} 条新日志`);
-                } else {
-                    this.primaryHasMore = false;
-                    this.$message.info('没有更多日志了');
-                }
+                await this.GetLogs();
             } catch (error) {
                 console.error('加载主应用日志失败:', error);
                 this.$message.error('加载日志失败，请重试');
+                this.primarySkipLineNum -= this.pageSize; // 回滚
             } finally {
                 this.primaryLoading = false;
             }
@@ -394,127 +181,31 @@ export default {
             if (this.backupLoading || !this.backupHasMore) return;
             
             this.backupLoading = true;
+            this.activeLogTab = 'backup';
+            this.backupSkipLineNum += this.pageSize;
             
             try {
-                // 模拟API调用延迟
-                await new Promise(resolve => setTimeout(resolve, 800));
-                
-                // 生成更多日志数据
-                const newLogs = this.generateMoreLogs('backup', this.backupPage + 1);
-                
-                if (newLogs.length > 0) {
-                    this.backupLogs.push(...newLogs);
-                    this.backupPage++;
-                    
-                    // 模拟数据有限，假设最多加载5页
-                    if (this.backupPage >= 5) {
-                        this.backupHasMore = false;
-                    }
-                    
-                    this.$message.success(`成功加载 ${newLogs.length} 条新日志`);
-                } else {
-                    this.backupHasMore = false;
-                    this.$message.info('没有更多日志了');
-                }
+                await this.GetLogs();
             } catch (error) {
                 console.error('加载备用日志失败:', error);
                 this.$message.error('加载日志失败，请重试');
+                this.backupSkipLineNum -= this.pageSize; // 回滚
             } finally {
                 this.backupLoading = false;
             }
         },
 
-        // 生成更多日志数据
-        generateMoreLogs(type, page) {
-            const logs = [];
-            const baseId = type === 'primary' ? this.primaryLogs.length : this.backupLogs.length;
-            
-            // 模拟日志数据
-            const logTemplates = {
-                primary: [
-                    { level: 'INFO', module: '数据同步', message: '完成增量数据同步，同步记录数: {count}条', status: '正常' },
-                    { level: 'INFO', module: '系统监控', message: 'CPU使用率: {cpu}%, 内存使用率: {memory}%', status: '正常' },
-                    { level: 'WARN', module: '网络监控', message: '检测到网络延迟: {delay}ms', status: '警告' },
-                    { level: 'INFO', module: '数据库', message: '数据库连接池状态检查完成，活动连接: {conn}个', status: '正常' },
-                    { level: 'ERROR', module: '数据验证', message: '发现 {errors} 条数据异常，正在处理', status: '错误' },
-                    { level: 'INFO', module: '备份任务', message: '定时备份任务执行完成，备份大小: {size}MB', status: '正常' }
-                ],
-                backup: [
-                    { level: 'INFO', module: '备份服务', message: '接收到主系统数据，处理记录数: {count}条', status: '正常' },
-                    { level: 'INFO', module: '数据校验', message: '数据完整性校验通过，校验记录: {count}条', status: '正常' },
-                    { level: 'WARN', module: '存储监控', message: '备用存储使用率: {usage}%', status: '警告' },
-                    { level: 'INFO', module: '系统状态', message: '备用系统运行正常，响应时间: {time}ms', status: '正常' },
-                    { level: 'INFO', module: '数据写入', message: '成功写入数据表 {table}，写入记录: {count}条', status: '正常' },
-                    { level: 'INFO', module: '监控报告', message: '备用系统健康检查完成，所有指标正常', status: '正常' }
-                ]
-            };
-            
-            // 生成指定数量的日志
-            for (let i = 0; i < this.pageSize; i++) {
-                const template = logTemplates[type][Math.floor(Math.random() * logTemplates[type].length)];
-                const now = new Date();
-                now.setMinutes(now.getMinutes() - Math.random() * 60 * 24); // 随机时间（24小时内）
-                
-                const timestamp = now.toLocaleString('zh-CN', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                }).replace(/\//g, '-');
-
-                // 替换消息模板中的占位符
-                let message = template.message;
-                message = message.replace('{count}', Math.floor(Math.random() * 1000) + 100);
-                message = message.replace('{cpu}', Math.floor(Math.random() * 30) + 30);
-                message = message.replace('{memory}', Math.floor(Math.random() * 40) + 40);
-                message = message.replace('{delay}', Math.floor(Math.random() * 200) + 50);
-                message = message.replace('{conn}', Math.floor(Math.random() * 20) + 5);
-                message = message.replace('{errors}', Math.floor(Math.random() * 5) + 1);
-                message = message.replace('{size}', Math.floor(Math.random() * 500) + 100);
-                message = message.replace('{usage}', Math.floor(Math.random() * 30) + 40);
-                message = message.replace('{time}', Math.floor(Math.random() * 100) + 50);
-                message = message.replace('{table}', ['user_info', 'order_data', 'system_config', 'log_archive'][Math.floor(Math.random() * 4)]);
-
-                logs.push({
-                    id: baseId + i + 1,
-                    timestamp: timestamp,
-                    level: template.level,
-                    module: template.module,
-                    message: message,
-                    status: template.status
-                });
+        // 切换标签时重新加载数据
+        handleTabClick() {
+            const currentLogs = this.activeLogTab === 'primary' ? this.primaryLogs : this.backupLogs;
+            if (currentLogs.length === 0) {
+                if (this.activeLogTab === 'primary') {
+                    this.primarySkipLineNum = 0;
+                } else {
+                    this.backupSkipLineNum = 0;
+                }
+                this.GetLogs();
             }
-            
-            // 模拟最后一页返回较少数据
-            if (page >= 5) {
-                return [];
-            }
-            
-            return logs;
-        },
-
-        // 获取日志级别对应的标签类型
-        getLogLevelType(level) {
-            const typeMap = {
-                'INFO': '',
-                'WARN': 'warning',
-                'ERROR': 'danger',
-                'DEBUG': 'info'
-            };
-            return typeMap[level] || '';
-        },
-
-        // 获取状态对应的标签类型
-        getStatusType(status) {
-            const typeMap = {
-                '正常': 'success',
-                '警告': 'warning',
-                '错误': 'danger',
-                '运行中': 'info'
-            };
-            return typeMap[status] || '';
         }
     },
 };
@@ -596,101 +287,29 @@ export default {
         }
     }
 
-    .table-container {
-        ::v-deep .el-table {
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            
-            .el-table__header-wrapper {
-                th {
-                    border-bottom: 2px solid rgba(0, 0, 0, 0.08);
-                    
-                    .cell {
-                        color: #1a1a1a;
-                        font-weight: 600;
-                        font-size: 13px;
-                        letter-spacing: 0.5px;
-                        text-transform: uppercase;
-                    }
-                }
-            }
-            
-            .el-table__body-wrapper {
-                tr {
-                    transition: all 0.3s ease;
-                    
-                    &:hover {
-                        background-color: rgba(0, 0, 0, 0.02) !important;
-                    }
-                    
-                    td {
-                        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-                        
-                        .cell {
-                            color: #333333;
-                            font-size: 13px;
-                            line-height: 1.6;
-                        }
-                    }
+    .log-container {
+        .log-textarea {
+            ::v-deep .el-textarea__inner {
+                background: #1a1a1a;
+                color: #00ff00;
+                font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+                font-size: 13px;
+                line-height: 1.4;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                padding: 16px;
+                resize: vertical;
+                min-height: 600px;
+                
+                &:focus {
+                    border-color: #000000;
+                    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
                 }
                 
-                .el-table__row--striped {
-                    background-color: rgba(0, 0, 0, 0.02);
+                &::placeholder {
+                    color: #666666;
                 }
             }
-        }
-        
-        .module-tag {
-            background: rgba(0, 0, 0, 0.06);
-            color: #1a1a1a;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-            letter-spacing: 0.5px;
-        }
-        
-        ::v-deep .el-tag {
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            border: none;
-            
-            &.el-tag--success {
-                background: linear-gradient(135deg, #000000 0%, #333333 100%);
-                color: white;
-            }
-            
-            &.el-tag--warning {
-                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-                color: #1a1a1a;
-                border: 1px solid rgba(0, 0, 0, 0.2);
-            }
-            
-            &.el-tag--danger {
-                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-                color: #1a1a1a;
-                border: 1px solid rgba(0, 0, 0, 0.3);
-            }
-            
-            &.el-tag--info {
-                background: rgba(0, 0, 0, 0.06);
-                color: #1a1a1a;
-            }
-            
-            &:not(.el-tag--success) {
-                background: rgba(0, 0, 0, 0.06);
-                color: #1a1a1a;
-            }
-        }
-        
-        .el-icon-time {
-            color: #666666;
-            font-size: 14px;
         }
     }
 
@@ -774,10 +393,6 @@ export default {
 
 // 全局样式覆盖
 ::v-deep .el-button {
-    font-family: inherit;
-}
-
-::v-deep .el-table {
     font-family: inherit;
 }
 </style>

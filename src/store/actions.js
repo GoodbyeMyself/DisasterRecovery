@@ -1,5 +1,3 @@
-
-
 // xxx
 import * as storeStatic from './storeStatic';
 import { requestMethod, tip } from 'javascript@/codeTable/globalStatic.js';
@@ -9,7 +7,7 @@ import { request } from 'javascript@/http';
 const actions = {
     // 本地数据统一请求方法
     [storeStatic.A_ACTION_COMMON]({ commit }, {
-        prefixPath = window.DISASTER_RECOVERY.hostName,
+        prefixPath = process.env.NODE_ENV === 'production' ? '' : window.DISASTER_RECOVERY.hostName,
         url,
         data = {},
         method = requestMethod.__GET,
