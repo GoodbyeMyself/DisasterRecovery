@@ -118,7 +118,7 @@ export default {
             },
             // 周期配置
             configForm: {
-                interval: 30,
+                interval: 0,
             },
             rules: {
                 interval: [
@@ -162,6 +162,8 @@ export default {
                     this.master = res.data.master;
                     // 备应用
                     this.slave = res.data.slave;
+                    // 周期配置
+                    this.configForm.interval = res.data.master.backupInterval || 30;
                 }
             });
         },
