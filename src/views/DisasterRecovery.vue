@@ -14,17 +14,17 @@
                             class="log-textarea"
                         />
                         
-                        <!-- 加载更多按钮 - 主应用日志 -->
-                        <div class="load-more-container">
+                        <!-- 刷新按钮 - 主应用日志 -->
+                        <div class="refresh-container">
                             <el-button
                                 :loading="primaryLoading"
-                                @click="loadMorePrimaryLogs"
+                                @click="refreshPrimaryLogs"
                                 type="primary"
                                 size="medium"
-                                class="load-more-btn"
+                                class="refresh-btn"
                             >
-                                <span v-if="!primaryLoading">加载更多日志</span>
-                                <span v-else>加载中...</span>
+                                <span v-if="!primaryLoading">刷新日志</span>
+                                <span v-else>刷新中...</span>
                             </el-button>
                         </div>
                     </div>
@@ -40,17 +40,17 @@
                             class="log-textarea"
                         />
                         
-                        <!-- 加载更多按钮 - 备用日志 -->
-                        <div class="load-more-container">
+                        <!-- 刷新按钮 - 备用日志 -->
+                        <div class="refresh-container">
                             <el-button
                                 :loading="backupLoading"
-                                @click="loadMoreBackupLogs"
+                                @click="refreshBackupLogs"
                                 type="primary"
                                 size="medium"
-                                class="load-more-btn"
+                                class="refresh-btn"
                             >
-                                <span v-if="!backupLoading">加载更多日志</span>
-                                <span v-else>加载中...</span>
+                                <span v-if="!backupLoading">刷新日志</span>
+                                <span v-else>刷新中...</span>
                             </el-button>
                         </div>
                     </div>
@@ -75,9 +75,8 @@ export default {
             backupLoading: false,
             primaryHasMore: true,
             backupHasMore: true,
-            primarySkipLineNum: 1,
-            backupSkipLineNum: 1,
-            pageSize: 100,
+            skipLineNum: 1,
+            pageSize: 200,
         };
     },
     computed: {
@@ -101,10 +100,9 @@ export default {
         ]),
         GetLogs() {
             const logType = this.activeLogTab === 'primary' ? 'master' : 'slave';
-            const skipLineNum = this.activeLogTab === 'primary' ? this.primarySkipLineNum : this.backupSkipLineNum;
             
             this[storeStatic.A_ACTION_COMMON]({
-                url: `log?type=${logType}&skipLineNum=${skipLineNum}&limit=${this.pageSize}`,
+                url: `log?type=${logType}&skipLineNum=${this.skipLineNum}&limit=${this.pageSize}`,
             }).then(res => {
                 console.log('日志接口返回:', res);
                 
@@ -112,18 +110,10 @@ export default {
                     const logData = res.data; // 直接使用字符串数组
                     
                     if (this.activeLogTab === 'primary') {
-                        if (skipLineNum === 1) {
-                            this.primaryLogs = logData;
-                        } else {
-                            this.primaryLogs.push(...logData);
-                        }
+                        this.primaryLogs = logData;
                         this.primaryHasMore = logData.length === this.pageSize;
                     } else {
-                        if (skipLineNum === 1) {
-                            this.backupLogs = logData;
-                        } else {
-                            this.backupLogs.push(...logData);
-                        }
+                        this.backupLogs = logData;
                         this.backupHasMore = logData.length === this.pageSize;
                     }
                     
@@ -147,39 +137,37 @@ export default {
             });
         },
         
-        // 加载更多主应用日志
-        async loadMorePrimaryLogs() {
-            if (this.primaryLoading || !this.primaryHasMore) return;
+        // 刷新主应用日志
+        async refreshPrimaryLogs() {
+            if (this.primaryLoading) return;
             
             this.primaryLoading = true;
             this.activeLogTab = 'primary';
-            this.primarySkipLineNum += this.pageSize;
             
             try {
                 await this.GetLogs();
+                this.$message.success('主应用日志已刷新');
             } catch (error) {
-                console.error('加载主应用日志失败:', error);
-                this.$message.error('加载日志失败，请重试');
-                this.primarySkipLineNum -= this.pageSize; // 回滚
+                console.error('刷新主应用日志失败:', error);
+                this.$message.error('刷新日志失败，请重试');
             } finally {
                 this.primaryLoading = false;
             }
         },
 
-        // 加载更多备用日志
-        async loadMoreBackupLogs() {
-            if (this.backupLoading || !this.backupHasMore) return;
+        // 刷新备用日志
+        async refreshBackupLogs() {
+            if (this.backupLoading) return;
             
             this.backupLoading = true;
             this.activeLogTab = 'backup';
-            this.backupSkipLineNum += this.pageSize;
             
             try {
                 await this.GetLogs();
+                this.$message.success('备用日志已刷新');
             } catch (error) {
-                console.error('加载备用日志失败:', error);
-                this.$message.error('加载日志失败，请重试');
-                this.backupSkipLineNum -= this.pageSize; // 回滚
+                console.error('刷新备用日志失败:', error);
+                this.$message.error('刷新日志失败，请重试');
             } finally {
                 this.backupLoading = false;
             }
@@ -189,11 +177,6 @@ export default {
         handleTabClick() {
             const currentLogs = this.activeLogTab === 'primary' ? this.primaryLogs : this.backupLogs;
             if (currentLogs.length === 0) {
-                if (this.activeLogTab === 'primary') {
-                    this.primarySkipLineNum = 1;
-                } else {
-                    this.backupSkipLineNum = 1;
-                }
                 this.GetLogs();
             }
         }
@@ -303,14 +286,14 @@ export default {
         }
     }
 
-    // 加载更多容器样式
-    .load-more-container {
+    // 刷新按钮容器样式
+    .refresh-container {
         text-align: center;
         padding: 24px 0;
         margin-top: 16px;
         border-top: 1px solid rgba(0, 0, 0, 0.06);
         
-        .load-more-btn {
+        .refresh-btn {
             background: linear-gradient(135deg, #000000 0%, #333333 100%);
             border: none;
             border-radius: 12px;
