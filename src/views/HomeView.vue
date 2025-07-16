@@ -47,7 +47,7 @@
                 <el-button
                     type="primary"
                     :loading="syncLoading"
-                    :disabled="['running'].includes(systemStatus)"
+                    :disabled="['running', 'stopping'].includes(systemStatus)"
                     @click="startSync"
                 >
                     开始同步
@@ -55,8 +55,8 @@
                 <el-button
                     type="info"
                     :loading="stopLoading"
-                    :disabled="['stopping', 'stopped'].includes(systemStatus)"
                     @click="stopSync"
+                    :disabled="['stopping', 'stopped'].includes(systemStatus)"
                 >
                     停止同步
                 </el-button>
@@ -134,7 +134,9 @@ export default {
             // 停止状态
             stopLoading: false,
             // 系统状态:  stopping 停止中, running 运行中, stopped 已停止
-            systemStatus: ''
+            systemStatus: '',
+            // 状态查询定时器
+            statusTimer: null
         };
     },
     mounted() {
@@ -142,6 +144,10 @@ export default {
         this.GetMonitor();
         // 获取 状态查询
         this.GetQueryStatus();
+    },
+    beforeDestroy() {
+        // 清理定时器
+        this.clearStatusTimer();
     },
     methods: {
         ...mapActions([
@@ -237,23 +243,64 @@ export default {
             }).then(res => {
                 // --
                 this.systemStatus = res.data || 'stopped';
+                // 如果状态为stopped，清除定时器
+                if (this.systemStatus === 'stopped') {
+                    this.clearStatusTimer();
+                }
             });
+        },
+        /**
+         * @description: 启动状态查询定时器
+         * @author: M.yunlong
+         * @date: 2025-01-08
+        */
+        startStatusTimer() {
+            // 清除之前的定时器
+            this.clearStatusTimer();
+            // 启动新的定时器，每2秒查询一次状态
+            this.statusTimer = setInterval(() => {
+                this.GetQueryStatus();
+            }, 3000);
+        },
+        /**
+         * @description: 清除状态查询定时器
+         * @author: M.yunlong
+         * @date: 2025-01-08
+        */
+        clearStatusTimer() {
+            if (this.statusTimer) {
+                clearInterval(this.statusTimer);
+                this.statusTimer = null;
+            }
         },
         // 开始同步 - 改为静态处理
         async startSync() {
             try {
                 this.syncLoading = true;
                 this.systemStatus = 'running';
+                // 启动状态查询定时器
+                this.startStatusTimer();
                 // 异步操作
                 this[storeStatic.A_ACTION_COMMON]({
                     url: 'startSync',
                     method: 'post'
                 }).then(res => {
-                    this.$message.success("同步已开始");
+                    if (res.code === '0') {
+                        this.$message.success("同步已开始");
+                    } else {
+                        // --
+                        this.systemStatus = 'stopped';
+                        // 清除定时器
+                        this.clearStatusTimer();
+                        // --
+                        this.$message.error("启动同步失败: " + error.message);
+                    }
                 });
             } catch (error) {
                 // --
                 this.systemStatus = 'stopped';
+                // 清除定时器
+                this.clearStatusTimer();
                 // --
                 this.$message.error("启动同步失败: " + error.message);
             } finally {
@@ -264,19 +311,24 @@ export default {
         async stopSync() {
             try {
                 this.stopLoading = true;
+                // --
                 this.systemStatus = 'stopping';
+                // 启动状态查询定时器
+                this.startStatusTimer();
                 // 异步操作
                 this[storeStatic.A_ACTION_COMMON]({
                     url: 'stopSync',
                     method: 'post'
                 }).then(res => {
                     // --
-                    this.systemStatus = 'stopped';
-                    // --
-                    this.$message.success("同步已停止");
+                    this.$message.success("停止中...");
+                    // 立即查询一次状态
+                    this.GetQueryStatus();
                 });
             } catch (error) {
                 this.$message.error("停止同步失败: " + error.message);
+                // 清除定时器
+                this.clearStatusTimer();
             } finally {
                 this.stopLoading = false;
             }

@@ -55,6 +55,41 @@
                         </div>
                     </div>
                 </el-tab-pane>
+                <el-tab-pane label="灾备切换日志" name="switchLog">
+                    <div class="switch-log-container">
+                        <div v-if="switchLogs && Object.keys(switchLogs).length > 0" class="switch-log-content">
+                            <div v-for="(logs, step) in switchLogs" :key="step" class="step-container">
+                                <div class="step-title">{{ step }}</div>
+                                <div class="step-log">
+                                    <el-input
+                                        type="textarea"
+                                        :value="logs.join('')"
+                                        :rows="Math.max(3, Math.min(10, logs.length))"
+                                        readonly
+                                        class="step-log-textarea"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else class="empty-log">
+                            <span>暂无灾备切换日志数据...</span>
+                        </div>
+                        
+                        <!-- 刷新按钮 - 灾备切换日志 -->
+                        <div class="refresh-container">
+                            <el-button
+                                :loading="switchLogLoading"
+                                @click="refreshSwitchLogs"
+                                type="primary"
+                                size="medium"
+                                class="refresh-btn"
+                            >
+                                <span v-if="!switchLogLoading">刷新日志</span>
+                                <span v-else>刷新中...</span>
+                            </el-button>
+                        </div>
+                    </div>
+                </el-tab-pane>
             </el-tabs>
         </el-card>
     </div>
@@ -71,8 +106,10 @@ export default {
             activeLogTab: "primary",
             primaryLogs: [],
             backupLogs: [],
+            switchLogs: {}, // 灾备切换日志数据
             primaryLoading: false,
             backupLoading: false,
+            switchLogLoading: false, // 灾备切换日志加载状态
             primaryHasMore: true,
             backupHasMore: true,
             skipLineNum: 1,
@@ -136,6 +173,32 @@ export default {
                 this.$message.error('获取日志失败，请重试');
             });
         },
+
+        // 获取灾备切换日志
+        GetSwitchLogs() {
+            this[storeStatic.A_ACTION_COMMON]({
+                url: 'getChangeLog',
+            }).then(res => {
+                console.log('灾备切换日志接口返回:', res);
+                
+                if (res && res.code === '0' && res.data && typeof res.data === 'object') {
+                    this.switchLogs = res.data;
+                    
+                    const stepCount = Object.keys(res.data).length;
+                    if (stepCount > 0) {
+                        // this.$message.success(`成功加载 ${stepCount} 个步骤的日志`);
+                    } else {
+                        this.$message.info('没有灾备切换日志数据');
+                    }
+                } else {
+                    this.$message.error('加载灾备切换日志失败');
+                    console.error('灾备切换日志接口返回错误:', res);
+                }
+            }).catch(error => {
+                console.error('获取灾备切换日志失败:', error);
+                this.$message.error('获取灾备切换日志失败，请重试');
+            });
+        },
         
         // 刷新主应用日志
         async refreshPrimaryLogs() {
@@ -173,11 +236,36 @@ export default {
             }
         },
 
+        // 刷新灾备切换日志
+        async refreshSwitchLogs() {
+            if (this.switchLogLoading) return;
+            
+            this.switchLogLoading = true;
+            
+            try {
+                await this.GetSwitchLogs();
+                this.$message.success('灾备切换日志已刷新');
+            } catch (error) {
+                console.error('刷新灾备切换日志失败:', error);
+                this.$message.error('刷新日志失败，请重试');
+            } finally {
+                this.switchLogLoading = false;
+            }
+        },
+
         // 切换标签时重新加载数据
         handleTabClick() {
-            const currentLogs = this.activeLogTab === 'primary' ? this.primaryLogs : this.backupLogs;
-            if (currentLogs.length === 0) {
-                this.GetLogs();
+            if (this.activeLogTab === 'switchLog') {
+                // 切换到灾备切换日志页签
+                if (Object.keys(this.switchLogs).length === 0) {
+                    this.GetSwitchLogs();
+                }
+            } else {
+                // 切换到其他日志页签
+                const currentLogs = this.activeLogTab === 'primary' ? this.primaryLogs : this.backupLogs;
+                if (currentLogs.length === 0) {
+                    this.GetLogs();
+                }
             }
         }
     },
@@ -283,6 +371,64 @@ export default {
                     color: #666666;
                 }
             }
+        }
+    }
+
+    // 灾备切换日志容器样式
+    .switch-log-container {
+        .switch-log-content {
+            max-height: 600px;
+            overflow-y: auto;
+            .step-container {
+                margin-bottom: 24px;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                border-radius: 12px;
+                overflow: hidden;
+                background: rgba(255, 255, 255, 0.8);
+                
+                .step-title {
+                    background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
+                    padding: 16px 20px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: #333333;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+                    letter-spacing: 0.5px;
+                }
+                
+                .step-log {
+                    padding: 16px;
+                    
+                    .step-log-textarea {
+                        ::v-deep .el-textarea__inner {
+                            background: #1a1a1a;
+                            color: #00ff00;
+                            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+                            font-size: 13px;
+                            line-height: 1.4;
+                            border: 1px solid rgba(0, 0, 0, 0.1);
+                            border-radius: 8px;
+                            padding: 12px;
+                            resize: vertical;
+                            
+                            &:focus {
+                                border-color: #000000;
+                                box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        .empty-log {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999999;
+            font-size: 16px;
+            background: rgba(248, 249, 250, 0.5);
+            border-radius: 12px;
+            margin-bottom: 24px;
         }
     }
 

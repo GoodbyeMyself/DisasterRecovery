@@ -27,30 +27,14 @@
             <el-header class="layout-header">
                 <div class="header-content">
                     <div class="user-avatar">
-                        <el-dropdown trigger="click">
-                            <div class="avatar-wrapper">
-                                <el-avatar 
-                                    :size="32" 
-                                >
-                                    <img src="../assets/images/user.png" />
-                                </el-avatar>
-                                <span class="username">管理员</span>
-                            </div>
-                            <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item>
-                                    <i class="el-icon-user"></i>
-                                    个人信息
-                                </el-dropdown-item>
-                                <el-dropdown-item>
-                                    <i class="el-icon-setting"></i>
-                                    系统设置
-                                </el-dropdown-item>
-                                <el-dropdown-item divided>
-                                    <i class="el-icon-switch-button"></i>
-                                    退出登录
-                                </el-dropdown-item>
-                            </el-dropdown-menu>
-                        </el-dropdown>
+                        <div class="avatar-wrapper">
+                            <el-avatar 
+                                :size="32" 
+                            >
+                                <img src="../assets/images/user.png" />
+                            </el-avatar>
+                            <span class="username">管理员</span>
+                        </div>
                     </div>
                 </div>
             </el-header>
