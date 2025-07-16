@@ -184,10 +184,20 @@ export default {
                     url: 'changeMaster',
                     method: 'post'
                 }).then(res => {
-                    // messages
-                    this.$message.success("主备中心切换成功");
-                    // 获取 数据流向
-                    this.GetMonitor();
+                    /**
+                     * @description: 成功态
+                     * @author: M.yunlong
+                     * @date: 2025-07-16 14:48:23
+                    */
+                    if (res.code === '0') {
+                        // messages
+                        this.$message.success("主备中心切换成功");
+                        // 获取 数据流向
+                        this.GetMonitor();
+                    } else {
+                        // messages
+                        this.$message.warning(res.errorDetail || '切换失败');
+                    }
                 });
             } catch (error) {
                 if (error !== "cancel") {
