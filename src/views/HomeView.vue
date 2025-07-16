@@ -277,32 +277,36 @@ export default {
         async startSync() {
             try {
                 this.syncLoading = true;
-                this.systemStatus = 'running';
-                // 启动状态查询定时器
-                this.startStatusTimer();
+                // 清除定时器
+                this.clearStatusTimer();
                 // 异步操作
                 this[storeStatic.A_ACTION_COMMON]({
                     url: 'startSync',
                     method: 'post'
                 }).then(res => {
                     if (res.code === '0') {
+                        // --
                         this.$message.success("同步已开始");
+                        // --
+                        this.systemStatus = 'running';
+                        // 启动状态查询定时器
+                        this.startStatusTimer();
                     } else {
                         // --
                         this.systemStatus = 'stopped';
                         // 清除定时器
                         this.clearStatusTimer();
                         // --
-                        this.$message.error("启动同步失败: " + error.message);
+                        this.$message.error(res.errorDetail);
                     }
                 });
-            } catch (error) {
+            } catch (e) {
                 // --
                 this.systemStatus = 'stopped';
                 // 清除定时器
                 this.clearStatusTimer();
                 // --
-                this.$message.error("启动同步失败: " + error.message);
+                this.$message.error("启动同步失败");
             } finally {
                 this.syncLoading = false;
             }
@@ -311,22 +315,27 @@ export default {
         async stopSync() {
             try {
                 this.stopLoading = true;
-                // --
-                this.systemStatus = 'stopping';
-                // 启动状态查询定时器
-                this.startStatusTimer();
+                // 清除定时器
+                this.clearStatusTimer();
                 // 异步操作
                 this[storeStatic.A_ACTION_COMMON]({
                     url: 'stopSync',
                     method: 'post'
                 }).then(res => {
-                    // --
-                    this.$message.success("停止中...");
-                    // 立即查询一次状态
-                    this.GetQueryStatus();
+                    if (res.code === '0') {
+                        // --
+                        this.systemStatus = 'stopping';
+                        // --
+                        this.$message.success("停止中...");
+                        // 启动状态查询定时器
+                        this.startStatusTimer();
+                    } else {
+                        // --
+                        this.$message.error(res.errorDetail);
+                    }
                 });
-            } catch (error) {
-                this.$message.error("停止同步失败: " + error.message);
+            } catch (e) {
+                this.$message.error("停止同步失败");
                 // 清除定时器
                 this.clearStatusTimer();
             } finally {

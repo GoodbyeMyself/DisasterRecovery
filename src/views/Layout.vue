@@ -26,7 +26,7 @@
         <el-container>
             <el-header class="layout-header">
                 <div class="header-content">
-                    <div class="user-avatar">
+                    <!-- <div class="user-avatar">
                         <div class="avatar-wrapper">
                             <el-avatar 
                                 :size="32" 
@@ -35,7 +35,7 @@
                             </el-avatar>
                             <span class="username">管理员</span>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </el-header>
             <el-main class="layout-main">
